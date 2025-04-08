@@ -1,5 +1,6 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 
 
@@ -29,7 +30,7 @@ export const register =async(req,res)=>{
         role,
 
       })
-      return res.statue(201).json({
+      return res.status(201).json({
         message:"Account created successfully,",
         success:true
       })
@@ -76,7 +77,7 @@ export const login =async(req,res)=>{
     userId:user._id
    }
    const token =await jwt.sign(tokenData,process.env.SECRET_KEY,{expiresIn:'1d'});
-   user={
+   const userdata={
     _id:user._id,
     fullname:user.fullname,
     email:user.email,
@@ -88,7 +89,7 @@ export const login =async(req,res)=>{
    return res.status(200).cookie("token",token,{maxAge:1*24*60*60*1000,httpsOnly:true,sameSite:'strict'}
 
    ).json({
-    message:`welcome back ${user.fullname}`,
+    message:`welcome back ${userdata.fullname}`,
     success:true
    })
 
