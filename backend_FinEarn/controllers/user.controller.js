@@ -90,6 +90,7 @@ export const login =async(req,res)=>{
 
    ).json({
     message:`welcome back ${userdata.fullname}`,
+    userdata,
     success:true
    })
 
@@ -111,13 +112,17 @@ export const UpdateProfile=async(req,res)=>{
     try{
      const {fullname,email,bio,phoneNumber,skills}=req.body;
      const file=req.file;
-     if(!fullname|| !email ||!phoneNumber||!bio||!skills){
-        return res.status(400).json({
-            message:"something is missing",
-            success:false
-        });
-    };
-    const skillsArray= skills.split(",");
+    //  if(!fullname|| !email ||!phoneNumber||!bio||!skills){
+    //     return res.status(400).json({
+    //         message:"something is missing",
+    //         success:false
+    //     });
+    // };
+    let skillsArray;
+    if(skills){
+      const skillsArray= skills.split(",");
+    }
+    
     const userId=req.id;//middleware authentication
     let user=await User.findById(userId);
     if(!user){
@@ -127,11 +132,16 @@ export const UpdateProfile=async(req,res)=>{
         })
     }
     //updating the data
-    user.fullname=fullname,
-    user.email=email,
-    user.phoneNumber=phoneNumber,
-    user.profile.bio=bio,
-    user.profile.skills=skillsArray
+    if(fullname) user.fullname=fullname;
+    if(email) user.email=email;
+    if(phoneNumber) user.phoneNumber=phoneNumber;
+    if(bio) user.profile.bio=bio;
+    if(skills) user.profile.skills=skillsArray;
+    
+    
+    
+    
+    
     await user.save();
     user={
         _id:user._id,
